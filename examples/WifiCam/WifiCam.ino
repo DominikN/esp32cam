@@ -1,11 +1,24 @@
-#include <WebServer.h>
+#define USE_WIFI_NINA false
+
+#include <Husarnet.h>
 #include <WiFi.h>
+#include <WiFiWebServer.h>
 #include <esp32cam.h>
+
+#if __has_include("credentials.h")
+#include "credentials.h"
+#else
 
 const char* WIFI_SSID = "my-ssid";
 const char* WIFI_PASS = "my-pass";
 
-WebServer server(80);
+// Husarnet credentials
+const char* hostName = "esp32cam";
+const char* husarnetJoinCode = "fc94:b01d:1803:8dd8:b293:5c7d:7639:932a/xxxxxxxxxxxxxxxxxxxxxx";
+
+#endif
+
+WiFiWebServer server(80);
 
 static auto loRes = esp32cam::Resolution::find(320, 240);
 static auto hiRes = esp32cam::Resolution::find(800, 600);
@@ -36,7 +49,7 @@ handleBmp()
 
   server.setContentLength(frame->size());
   server.send(200, "image/bmp");
-  WiFiClient client = server.client();
+  HusarnetClient client = server.client();
   frame->writeTo(client);
 }
 
@@ -54,7 +67,7 @@ serveJpg()
 
   server.setContentLength(frame->size());
   server.send(200, "image/jpeg");
-  WiFiClient client = server.client();
+  HusarnetClient client = server.client();
   frame->writeTo(client);
 }
 
@@ -86,12 +99,12 @@ handleJpg()
 void
 handleMjpeg()
 {
-  if (!esp32cam::Camera.changeResolution(hiRes)) {
-    Serial.println("SET-HI-RES FAIL");
+  if (!esp32cam::Camera.changeResolution(loRes)) {
+    Serial.println("SET-LO-RES FAIL");
   }
 
   Serial.println("STREAM BEGIN");
-  WiFiClient client = server.client();
+  HusarnetClient client = server.client();
   auto startTime = millis();
   int res = esp32cam::Camera.streamMjpeg(client);
   if (res <= 0) {
@@ -112,7 +125,7 @@ setup()
     using namespace esp32cam;
     Config cfg;
     cfg.setPins(pins::AiThinker);
-    cfg.setResolution(hiRes);
+    cfg.setResolution(loRes);
     cfg.setBufferCount(2);
     cfg.setJpeg(80);
 
@@ -127,12 +140,18 @@ setup()
     delay(500);
   }
 
-  Serial.print("http://");
+  Serial.print("Local IP: ");
   Serial.println(WiFi.localIP());
+  Serial.print("http://");
+  Serial.println(hostName);
   Serial.println("  /cam.bmp");
   Serial.println("  /cam-lo.jpg");
   Serial.println("  /cam-hi.jpg");
   Serial.println("  /cam.mjpeg");
+
+  /* Start Husarnet */
+  Husarnet.join(husarnetJoinCode, hostName);
+  Husarnet.start();
 
   server.on("/cam.bmp", handleBmp);
   server.on("/cam-lo.jpg", handleJpgLo);
