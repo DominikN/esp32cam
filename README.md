@@ -22,9 +22,7 @@ This library has been tested with AI Thinker [ESP32-CAM](http://wiki.ai-thinker.
 - open `Tools -> Board`
 - select AI Thinker ESP32-CAM under “ESP32 Arduino (Husarnet)” section
 
-**
-NOTE: It might be required to uninstall and remove from your Arduino IDE directrories, the default "ESP32 Arduino" core before installing Husarnet package for ESP32.
-**
+**NOTE: It might be required to uninstall and remove from your Arduino IDE directrories, the default "ESP32 Arduino" core before installing Husarnet package for ESP32.**
 
 ## Installation
 
