@@ -8,6 +8,24 @@ This library has been tested with AI Thinker [ESP32-CAM](http://wiki.ai-thinker.
 
 ![esp32cam logo](docs/logo.svg)
 
+## Prepare Arduino IDE
+
+1. Install Arduino IDE
+2. Install Husarnet package for ESP32:
+- open File -> Preferences
+- in a field Additional Board Manager URLs add this link: `https://files.husarion.com/arduino/beta/package_esp32_husarnet_index.json` 
+- open `Tools -> Board: ... -> Boards Manager ...`
+- Search for `esp32-husarnet`
+- Click Install button
+
+3. Select ESP32 dev board:
+- open `Tools -> Board`
+- select AI Thinker ESP32-CAM under “ESP32 Arduino (Husarnet)” section
+
+**
+NOTE: It might be required to uninstall and remove from your Arduino IDE directrories, the default "ESP32 Arduino" core before installing Husarnet package for ESP32.
+**
+
 ## Installation
 
 1. Clone this repository under `$HOME/Arduino/libraries` directory.
